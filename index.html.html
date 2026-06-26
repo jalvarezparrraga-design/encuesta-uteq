@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encuesta de usabilidad — UTEQ</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f4f6f4; color: #1a1a1a; }
+    .survey { max-width: 640px; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+    .header { background: #1a5c2a; border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 1rem; }
+    .logo { background: #fff; border-radius: 8px; padding: 6px 10px; font-weight: 700; color: #1a5c2a; font-size: 18px; white-space: nowrap; }
+    .header-text h1 { color: #fff; font-size: 16px; font-weight: 500; }
+    .header-text p { color: rgba(255,255,255,0.75); font-size: 13px; margin-top: 4px; }
+    .step-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+    .progress-bar { height: 4px; background: #ddd; border-radius: 2px; margin-bottom: 1.5rem; overflow: hidden; }
+    .progress-fill { height: 100%; background: #1a5c2a; border-radius: 2px; transition: width 0.3s; width: 0%; }
+    .block { background: #fff; border: 0.5px solid #e0e0e0; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+    .block-title { font-size: 11px; font-weight: 500; color: #1a5c2a; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 1rem; }
+    .q { margin-bottom: 1.25rem; }
+    .q:last-child { margin-bottom: 0; }
+    .q > label { font-size: 14px; font-weight: 500; color: #1a1a1a; display: block; margin-bottom: 8px; }
+    .q .hint { font-size: 12px; color: #999; margin-bottom: 8px; }
+    .options { display: flex; flex-direction: column; gap: 6px; }
+    .opt { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 0.5px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+    .opt:hover { background: #f5f5f5; border-color: #bbb; }
+    .opt.selected { border-color: #1a5c2a; background: #eaf5ec; }
+    .opt input[type=radio], .opt input[type=checkbox] { accent-color: #1a5c2a; width: 15px; height: 15px; cursor: pointer; flex-shrink: 0; }
+    .opt span { font-size: 13px; color: #1a1a1a; }
+    .scale-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .scale-btn { padding: 6px 14px; border: 0.5px solid #e0e0e0; border-radius: 8px; font-size: 13px; cursor: pointer; background: #fff; color: #1a1a1a; transition: all 0.15s; }
+    .scale-btn:hover { background: #f5f5f5; border-color: #bbb; }
+    .scale-btn.sel { background: #1a5c2a; color: #fff; border-color: #1a5c2a; }
+    .scale-labels { display: flex; justify-content: space-between; margin-top: 4px; }
+    .scale-labels span { font-size: 11px; color: #999; }
+    textarea, input[type=text] { width: 100%; border: 0.5px solid #e0e0e0; border-radius: 8px; padding: 8px 10px; font-size: 13px; color: #1a1a1a; background: #fafafa; font-family: inherit; resize: vertical; }
+    textarea { min-height: 80px; }
+    textarea:focus, input[type=text]:focus { outline: none; border-color: #1a5c2a; }
+    .upload-zone { border: 1.5px dashed #bbb; border-radius: 8px; padding: 1.5rem; text-align: center; cursor: pointer; background: #fafafa; transition: all 0.15s; position: relative; }
+    .upload-zone:hover { border-color: #1a5c2a; background: #eaf5ec; }
+    .upload-zone input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+    .upload-zone svg { display: block; margin: 0 auto 8px; color: #1a5c2a; }
+    .upload-zone p { font-size: 13px; color: #555; }
+    .upload-zone .sub { font-size: 11px; color: #999; margin-top: 4px; }
+    .preview-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .preview-img { width: 80px; height: 80px; object-fit: cover; border-radius: 6px; border: 0.5px solid #e0e0e0; }
+    .menu-preview { background: #fff; border: 0.5px solid #e0e0e0; border-radius: 8px; overflow: hidden; margin-bottom: 10px; }
+    .menu-nav { background: #1a5c2a; padding: 6px 12px; display: flex; gap: 10px; flex-wrap: wrap; }
+    .menu-nav span { font-size: 11px; color: rgba(255,255,255,0.8); }
+    .menu-bar { background: #f5f5f5; padding: 6px 12px; display: flex; gap: 10px; flex-wrap: wrap; border-bottom: 0.5px solid #e0e0e0; }
+    .menu-bar span { font-size: 11px; color: #333; }
+    .menu-bar span.active { color: #1a5c2a; font-weight: 600; text-decoration: underline; }
+    .submit-btn { width: 100%; padding: 13px; background: #1a5c2a; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; margin-top: 1rem; transition: background 0.15s; }
+    .submit-btn:hover { background: #154d23; }
+    .submit-btn:disabled { background: #aaa; cursor: not-allowed; }
+    .sending-msg { text-align: center; padding: 1rem; font-size: 14px; color: #555; display: none; }
+    .success-msg { display: none; background: #eaf5ec; border: 0.5px solid #1a5c2a; border-radius: 12px; padding: 2.5rem; text-align: center; margin-top: 1rem; }
+    .success-msg svg { display: block; margin: 0 auto 12px; color: #1a5c2a; }
+    .success-msg h2 { color: #1a5c2a; font-size: 18px; margin-bottom: 6px; }
+    .success-msg p { color: #555; font-size: 14px; }
+    .error-msg { display: none; background: #fdf0f0; border: 0.5px solid #e74c3c; border-radius: 8px; padding: 1rem; text-align: center; font-size: 13px; color: #c0392b; margin-top: 0.5rem; }
+    .required { color: #c0392b; }
+    @media (max-width: 480px) {
+      .header { flex-direction: column; align-items: flex-start; }
+      .menu-bar { gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="survey">
+
+  <div class="header">
+    <div class="logo">UTEQ</div>
+    <div class="header-text">
+      <h1>¿Cómo mejorar el menú de nuestra página web?</h1>
+      <p>Tu opinión nos ayuda a rediseñar uteq.edu.ec · 5 minutos</p>
+    </div>
+  </div>
+
+  <div class="step-label" id="step-label">Sección 1 de 4</div>
+  <div class="progress-bar"><div class="progress-fill" id="prog"></div></div>
+
+  <div id="form-body">
+
+    <!-- BLOQUE 1 -->
+    <div class="block">
+      <div class="block-title">¿Quién eres?</div>
+      <div class="q">
+        <label>1. ¿Cómo te describes? <span class="required">*</span></label>
+        <div class="options">
+          <label class="opt"><input type="radio" name="q1" value="Estudiante UTEQ"><span>Estudiante de la UTEQ</span></label>
+          <label class="opt"><input type="radio" name="q1" value="Aspirante / colegio"><span>Estudiante de colegio / aspirante</span></label>
+          <label class="opt"><input type="radio" name="q1" value="Docente / empleado"><span>Docente o empleado de la UTEQ</span></label>
+          <label class="opt"><input type="radio" name="q1" value="Investigador externo"><span>Investigador o aliado externo</span></label>
+          <label class="opt"><input type="radio" name="q1" value="Otro"><span>Otro</span></label>
+        </div>
+      </div>
+      <div class="q">
+        <label>2. ¿Con qué frecuencia visitas uteq.edu.ec?</label>
+        <div class="options">
+          <label class="opt"><input type="radio" name="q2" value="Nunca"><span>Nunca la he visitado</span></label>
+          <label class="opt"><input type="radio" name="q2" value="Rara vez"><span>Rara vez</span></label>
+          <label class="opt"><input type="radio" name="q2" value="A veces"><span>A veces</span></label>
+          <label class="opt"><input type="radio" name="q2" value="Frecuentemente"><span>Frecuentemente</span></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- BLOQUE 2 -->
+    <div class="block">
+      <div class="block-title">Sobre el menú actual</div>
+      <div class="q">
+        <label>3. Mira el menú actual de la UTEQ. ¿Qué tan fácil es encontrar lo que buscas?</label>
+        <div class="menu-preview">
+          <div class="menu-nav">
+            <span>Biblioteca</span><span>Cooperación Internacional</span><span>Comunicación</span><span>Contacto</span>
+          </div>
+          <div class="menu-bar">
+            <span class="active">La Universidad ▾</span><span>Admisión</span><span>Carreras</span>
+            <span>Posgrado ▾</span><span>Investigación ▾</span><span>CIDU</span>
+            <span>Vinculación ▾</span><span>Bienestar Universitario ▾</span>
+            <span>Transparencia</span><span>Rendición de Cuentas</span>
+          </div>
+        </div>
+        <div class="scale-row" id="q3"></div>
+        <div class="scale-labels"><span>Muy difícil</span><span>Muy fácil</span></div>
+      </div>
+      <div class="q">
+        <label>4. ¿Qué palabra describe mejor el menú que ves arriba?</label>
+        <div class="options">
+          <label class="opt"><input type="radio" name="q4" value="Claro y organizado"><span>Claro y organizado</span></label>
+          <label class="opt"><input type="radio" name="q4" value="Confuso, demasiadas opciones"><span>Confuso, tiene demasiadas opciones</span></label>
+          <label class="opt"><input type="radio" name="q4" value="Incompleto"><span>Incompleto, faltan cosas</span></label>
+          <label class="opt"><input type="radio" name="q4" value="Anticuado"><span>Anticuado, se ve viejo</span></label>
+        </div>
+      </div>
+      <div class="q">
+        <label>5. ¿Qué es lo primero que buscas cuando entras a la página?</label>
+        <input type="text" id="q5" placeholder="Ej: horarios, carreras disponibles, noticias…">
+      </div>
+      <div class="q">
+        <label>6. ¿Alguna vez no encontraste algo que necesitabas? ¿Qué fue?</label>
+        <input type="text" id="q6" placeholder="Describe brevemente qué buscabas…">
+      </div>
+    </div>
+
+    <!-- BLOQUE 3 -->
+    <div class="block">
+      <div class="block-title">Tu propuesta de reorganización</div>
+      <div class="q">
+        <label>7. ¿Qué secciones serían las más importantes? <span style="font-size:11px;color:#999">(elige las que quieras)</span></label>
+        <div class="options">
+          <label class="opt"><input type="checkbox" name="q7" value="Oferta académica"><span>Oferta académica / Carreras</span></label>
+          <label class="opt"><input type="checkbox" name="q7" value="Admisión"><span>Admisión e inscripciones</span></label>
+          <label class="opt"><input type="checkbox" name="q7" value="Vida estudiantil"><span>Vida estudiantil</span></label>
+          <label class="opt"><input type="checkbox" name="q7" value="Investigación"><span>Investigación</span></label>
+          <label class="opt"><input type="checkbox" name="q7" value="Noticias y eventos"><span>Noticias y eventos</span></label>
+          <label class="opt"><input type="checkbox" name="q7" value="La institución"><span>La institución (historia, autoridades)</span></label>
+          <label class="opt"><input type="checkbox" name="q7" value="Vinculación"><span>Vinculación / Convenios</span></label>
+          <label class="opt"><input type="checkbox" name="q7" value="Trámites"><span>Trámites y servicios</span></label>
+        </div>
+      </div>
+      <div class="q">
+        <label>8. ¿Qué nombre te parece más claro para la sección de los estudiantes?</label>
+        <div class="options">
+          <label class="opt"><input type="radio" name="q8" value="Admisión y Carreras"><span>Admisión y Carreras</span></label>
+          <label class="opt"><input type="radio" name="q8" value="Vida Estudiantil"><span>Vida Estudiantil</span></label>
+          <label class="opt"><input type="radio" name="q8" value="Portal Estudiantil"><span>Portal Estudiantil</span></label>
+          <label class="opt"><input type="radio" name="q8" value="Para estudiantes"><span>Para estudiantes</span></label>
+        </div>
+      </div>
+      <div class="q">
+        <label>9. Si solo quedaran 4 o 5 botones en el menú, ¿cuáles escogerías?</label>
+        <textarea id="q9" placeholder="Ej: Carreras, Investigación, Para estudiantes, Contacto…"></textarea>
+      </div>
+    </div>
+
+    <!-- BLOQUE 4 -->
+    <div class="block">
+      <div class="block-title">Tu boceto o idea libre</div>
+      <div class="q">
+        <label>10. Dibuja el menú ideal en papel, saca una foto y súbela.</label>
+        <p class="hint">Un dibujo simple a mano está perfecto.</p>
+        <div class="upload-zone">
+          <input type="file" id="file-input" accept="image/*" multiple>
+          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>
+          </svg>
+          <p>Toca para subir foto de tu boceto</p>
+          <p class="sub">JPG, PNG · máx 5 MB por imagen</p>
+        </div>
+        <div class="preview-grid" id="preview-grid"></div>
+      </div>
+      <div class="q">
+        <label>11. ¿Hay algo que la página debería tener y no tiene?</label>
+        <textarea id="q11" placeholder="Escribe tu sugerencia aquí…"></textarea>
+      </div>
+      <div class="q">
+        <label>12. ¿Algún comentario adicional?</label>
+        <textarea id="q12" placeholder="Cualquier idea, crítica o propuesta es bienvenida…"></textarea>
+      </div>
+    </div>
+
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">Enviar mis respuestas →</button>
+    <div class="sending-msg" id="sending-msg">Enviando respuestas… por favor espera.</div>
+    <div class="error-msg" id="error-msg">Hubo un problema al enviar. Revisa tu conexión e intenta de nuevo.</div>
+  </div>
+
+  <div class="success-msg" id="success-msg">
+    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    <h2>¡Gracias por tu aporte!</h2>
+    <p>Tu opinión ayuda a mejorar la página web de la UTEQ para todos.</p>
+  </div>
+
+</div>
+
+<script>
+  // ⚠️ REEMPLAZA esta URL con la que te da Google Apps Script al implementar
+  const SHEET_URL = "https://script.google.com/macros/s/AKfycbwfc684S3gtO8AF2CBf9HTVs8l8Eyi1WA3tICOQ7iRHDwDnzmZ_yGeYT0fvr_G-QimKrw/exec";
+
+  // Escala 1–5
+  const scaleRow = document.getElementById('q3');
+  let escala = "";
+  for (let i = 1; i <= 5; i++) {
+    const b = document.createElement('button');
+    b.className = 'scale-btn';
+    b.textContent = i;
+    b.type = 'button';
+    b.onclick = () => {
+      scaleRow.querySelectorAll('.scale-btn').forEach(x => x.classList.remove('sel'));
+      b.classList.add('sel');
+      escala = String(i);
+      updateProgress();
+    };
+    scaleRow.appendChild(b);
+  }
+
+  // Resaltar opciones
+  document.querySelectorAll('.opt input').forEach(inp => {
+    inp.addEventListener('change', () => {
+      if (inp.type === 'radio') {
+        document.querySelectorAll(`input[name="${inp.name}"]`).forEach(r => r.closest('.opt').classList.remove('selected'));
+      }
+      inp.closest('.opt').classList.toggle('selected', inp.checked);
+      updateProgress();
+    });
+  });
+
+  document.querySelectorAll('input[type=text], textarea').forEach(el => {
+    el.addEventListener('input', updateProgress);
+  });
+
+  function updateProgress() {
+    let filled = 0, total = 5;
+    if (document.querySelector('input[name="q1"]:checked')) filled++;
+    if (document.querySelector('input[name="q4"]:checked')) filled++;
+    if (document.getElementById('q5').value.trim()) filled++;
+    if (escala) filled++;
+    if (document.querySelector('input[name="q8"]:checked')) filled++;
+    const pct = Math.round((filled / total) * 100);
+    document.getElementById('prog').style.width = pct + '%';
+    const sec = pct < 40 ? '1 de 4' : pct < 70 ? '2 de 4' : pct < 90 ? '3 de 4' : '4 de 4';
+    document.getElementById('step-label').textContent = 'Sección ' + sec;
+  }
+
+  // Vista previa bocetos
+  document.getElementById('file-input').addEventListener('change', function () {
+    Array.from(this.files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = document.createElement('img');
+        img.src = e.target.result;
+        img.className = 'preview-img';
+        img.alt = file.name;
+        document.getElementById('preview-grid').appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+  });
+
+  function getChecked(name) {
+    return Array.from(document.querySelectorAll(`input[name="${name}"]:checked`))
+      .map(x => x.value).join(', ');
+  }
+
+  async function submitForm() {
+    if (!document.querySelector('input[name="q1"]:checked')) {
+      alert('Por favor indica quién eres (pregunta 1) antes de enviar.');
+      return;
+    }
+
+    const btn = document.getElementById('submit-btn');
+    const sending = document.getElementById('sending-msg');
+    const errorDiv = document.getElementById('error-msg');
+
+    btn.disabled = true;
+    sending.style.display = 'block';
+    errorDiv.style.display = 'none';
+
+    const payload = {
+      perfil:          getChecked('q1'),
+      frecuencia:      getChecked('q2'),
+      facilidad:       escala,
+      descripcion_menu: getChecked('q4'),
+      busca:           document.getElementById('q5').value.trim(),
+      no_encontro:     document.getElementById('q6').value.trim(),
+      secciones:       getChecked('q7'),
+      nombre_seccion:  getChecked('q8'),
+      botones:         document.getElementById('q9').value.trim(),
+      sugerencia:      document.getElementById('q11').value.trim(),
+      comentario:      document.getElementById('q12').value.trim()
+    };
+
+    try {
+      await fetch(SHEET_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      document.getElementById('form-body').style.display = 'none';
+      document.getElementById('success-msg').style.display = 'block';
+      document.getElementById('prog').style.width = '100%';
+      document.getElementById('step-label').textContent = '¡Completado!';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (err) {
+      sending.style.display = 'none';
+      errorDiv.style.display = 'block';
+      btn.disabled = false;
+    }
+  }
+</script>
+
+</body>
+</html>
